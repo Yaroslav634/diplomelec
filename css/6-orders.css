@@ -1,0 +1,75 @@
+/* ============ 6. КАРТОЧКИ ЗАКАЗОВ, ФИЛЬТРЫ, ТАЙМЛАЙН, ДЕТАЛИ ============ */
+
+/* ---------- КАРТОЧКИ ЗАКАЗОВ ---------- */
+.requests-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; margin-top: 20px; }
+
+.order-card-enhanced {
+  background: var(--bg-card); border-radius: var(--radius-xl); padding: 22px;
+  box-shadow: 0 4px 15px var(--shadow-light); transition: all 0.3s;
+  border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 15px;
+}
+.order-card-enhanced:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: var(--primary-color); }
+.order-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.order-number-section { display: flex; flex-direction: column; gap: 4px; }
+.order-card-number { font-size: 1.2rem; font-weight: 700; color: var(--text-primary); letter-spacing: 0.5px; }
+.order-card-date { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+
+.order-progress-bar { width: 100%; height: 6px; background: var(--bg-panel); border-radius: 3px; overflow: hidden; }
+.order-progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+.order-card-body { display: flex; flex-direction: column; gap: 8px; }
+.order-info-row { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: var(--text-secondary); }
+.order-info-row i { color: var(--primary-color); width: 20px; text-align: center; }
+
+.order-card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border-color); }
+.order-card-total { display: flex; flex-direction: column; }
+.total-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.total-value { font-size: 1.3rem; font-weight: 700; color: var(--success-color); }
+
+/* ---------- ФИЛЬТРЫ ЗАКАЗОВ ---------- */
+.filter-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+.filter-tab { padding: 10px 20px; background: var(--bg-panel); border-radius: 25px; cursor: pointer; transition: all 0.3s; font-size: 0.9rem; font-weight: 500; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 8px; }
+.filter-tab:hover { background: var(--primary-light); color: var(--primary-color); border-color: var(--primary-color); }
+.filter-tab.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+.filter-count { background: rgba(255, 255, 255, 0.3); padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700; }
+
+/* ---------- ТАЙМЛАЙН ---------- */
+.order-timeline { display: flex; justify-content: space-between; margin: 20px 0; padding: 20px; background: var(--bg-panel); border-radius: 12px; overflow-x: auto; gap: 10px; }
+.timeline-step { display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; opacity: 0.4; }
+.timeline-step.completed,
+.timeline-step.active,
+.timeline-step.cancelled { opacity: 1; }
+.timeline-dot { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-card); border: 3px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; transition: all 0.3s; }
+.timeline-step.completed .timeline-dot { border-color: var(--success-color); background: var(--success-color); color: white; }
+.timeline-step.active .timeline-dot { border-color: var(--primary-color); background: var(--primary-color); color: white; animation: pulse 2s infinite; }
+.timeline-step.cancelled .timeline-dot { border-color: var(--danger-color); background: var(--danger-color); color: white; }
+.timeline-label { font-size: 0.75rem; color: var(--text-secondary); text-align: center; max-width: 80px; }
+
+/* ---------- ДЕТАЛИ ЗАКАЗА ---------- */
+.detail-section { margin-bottom: 25px; padding: 20px; background: var(--bg-panel); border-radius: 12px; border: 1px solid var(--border-color); }
+.detail-section h4 { margin-bottom: 15px; color: var(--text-primary); display: flex; align-items: center; gap: 8px; font-size: 1rem; }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.detail-item { display: flex; flex-direction: column; gap: 4px; }
+.detail-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.detail-value { font-weight: 600; color: var(--text-primary); }
+
+.order-items-list { display: flex; flex-direction: column; gap: 8px; }
+.order-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); }
+.order-item-info { display: flex; align-items: center; gap: 10px; }
+.order-item-name { font-weight: 500; }
+.order-item-qty { background: var(--primary-light); color: var(--primary-color); padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; font-weight: 600; }
+.order-item-price { font-weight: 600; color: var(--text-primary); }
+.order-items-divider { padding: 8px 14px; background: var(--bg-panel); border-radius: 8px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); text-align: center; }
+
+.order-total-block { display: flex; justify-content: space-between; padding: 15px 20px; background: var(--success-light); border-radius: 12px; font-size: 1.2rem; font-weight: 700; margin-top: 15px; }
+.order-total-block span:last-child { color: var(--success-color); }
+
+.comment-box { background: var(--bg-card); border: 1px solid var(--border-color); border-left: 4px solid var(--primary-color); padding: 15px; border-radius: 8px; margin-top: 10px; color: var(--text-secondary); }
+.comment-box.manager { border-left-color: var(--warning-color); }
+
+.history-list { display: flex; flex-direction: column; gap: 15px; }
+.history-item { display: flex; gap: 15px; position: relative; }
+.history-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--primary-color); margin-top: 5px; flex-shrink: 0; position: relative; }
+.history-item:not(:last-child) .history-dot::after { content: ''; position: absolute; top: 12px; left: 5px; width: 2px; height: calc(100% + 15px); background: var(--border-color); }
+.history-status { font-weight: 500; margin-bottom: 4px; }
+.history-meta { font-size: 0.8rem; color: var(--text-muted); }
+.history-comment { margin-top: 6px; padding: 8px 12px; background: var(--bg-panel); border-radius: 6px; font-size: 0.85rem; color: var(--text-secondary); }
