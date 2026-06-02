@@ -7,24 +7,22 @@
   
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css">
+  
 </head>
 <body>
   <div id="loading" class="loading" style="display: none">
     <div class="spinner"></div>
   </div>
 
-  <!-- ШАПКА КАК В INDEX.HTML -->
+  <!-- ШАПКА -->
   <header class="modern-header">
     <div class="container">
       <div class="header-wrapper">
-        <!-- Логотип -->
         <a href="/" class="logo-link">
           <div class="logo-modern">
-            <div class="logo-icon-modern">
-              <i class="fas fa-bolt"></i>
-            </div>
+            <div class="logo-icon-modern"><i class="fas fa-bolt"></i></div>
             <div class="logo-text-modern">
               <span class="logo-title">Электрощит-Самара</span>
               <span class="logo-subtitle">Конфигуратор щитового оборудования</span>
@@ -32,34 +30,23 @@
           </div>
         </a>
         
-        <!-- Навигация -->
         <nav class="nav-modern">
           <ul class="nav-list">
             <li><a href="/" class="nav-link-modern">Главная</a></li>
             <li><a href="/#configurator" class="nav-link-modern">Конфигуратор</a></li>
-            <li><a href="/#catalog" class="nav-link-modern">Каталог</a></li>
+           
             <li><a href="/orders.html" class="nav-link-modern active">Мои заказы</a></li>
           </ul>
         </nav>
         
-        <!-- Авторизация -->
         <div class="auth-modern" id="authSection">
           <div class="auth-buttons-modern">
-            <button class="btn-login" onclick="showLoginModal()">
-              <i class="fas fa-sign-in-alt"></i>
-              <span>Вход</span>
-            </button>
-            <button class="btn-register" onclick="showRegisterModal()">
-              <i class="fas fa-user-plus"></i>
-              <span>Регистрация</span>
-            </button>
+            <button class="btn-login" onclick="showLoginModal()"><i class="fas fa-sign-in-alt"></i><span>Вход</span></button>
+            <button class="btn-register" onclick="showRegisterModal()"><i class="fas fa-user-plus"></i><span>Регистрация</span></button>
           </div>
         </div>
         
-        <!-- Мобильное меню (бургер) -->
-        <button class="mobile-menu-btn" id="mobileMenuBtn">
-          <i class="fas fa-bars"></i>
-        </button>
+        <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
       </div>
     </div>
   </header>
@@ -67,10 +54,7 @@
   <!-- Мобильное меню -->
   <div class="mobile-sidebar" id="mobileSidebar">
     <div class="mobile-sidebar-header">
-      <div class="sidebar-logo">
-        <i class="fas fa-bolt"></i>
-        <span>Меню</span>
-      </div>
+      <div class="sidebar-logo"><i class="fas fa-bolt"></i><span>Меню</span></div>
       <button class="sidebar-close" id="sidebarCloseBtn">&times;</button>
     </div>
     <ul class="mobile-sidebar-menu">
@@ -83,18 +67,14 @@
     </ul>
   </div>
 
-  <!-- Затемнение -->
   <div class="mobile-overlay" id="mobileOverlay"></div>
 
   <!-- Модальное окно авторизации -->
   <div class="auth-modal" id="authModal">
     <div class="auth-modal-overlay" id="authModalOverlay"></div>
     <div class="auth-modal-container">
-      <button class="auth-modal-close" id="authModalCloseBtn">
-        <i class="fas fa-times"></i>
-      </button>
+      <button class="auth-modal-close" id="authModalCloseBtn"><i class="fas fa-times"></i></button>
       <div class="auth-modal-body">
-        <!-- Форма входа -->
         <div id="loginForm" class="auth-form active">
           <div class="auth-form-header">
             <div class="auth-logo"><i class="fas fa-bolt"></i></div>
@@ -105,11 +85,11 @@
           <form onsubmit="event.preventDefault(); login();">
             <div class="auth-input-wrapper">
               <i class="fas fa-user auth-input-icon"></i>
-              <input type="text" id="loginUsername" class="auth-input" placeholder="Имя пользователя" autocomplete="username">
+              <input type="text" id="loginUsername" class="auth-input" placeholder="Имя пользователя">
             </div>
             <div class="auth-input-wrapper">
               <i class="fas fa-lock auth-input-icon"></i>
-              <input type="password" id="loginPassword" class="auth-input" placeholder="Пароль" autocomplete="current-password">
+              <input type="password" id="loginPassword" class="auth-input" placeholder="Пароль">
               <button type="button" class="auth-password-eye" onclick="togglePassword('loginPassword')"><i class="fas fa-eye-slash"></i></button>
             </div>
             <button type="submit" class="auth-btn"><i class="fas fa-sign-in-alt"></i><span>Войти</span></button>
@@ -117,7 +97,6 @@
           <div class="auth-footer"><span>Нет аккаунта?</span><button type="button" onclick="showRegisterForm()" class="auth-link">Зарегистрироваться</button></div>
         </div>
         
-        <!-- Форма регистрации -->
         <div id="registerForm" class="auth-form" style="display: none;">
           <div class="auth-form-header">
             <div class="auth-logo"><i class="fas fa-user-plus"></i></div>
@@ -125,33 +104,14 @@
             <p>Создайте новый аккаунт</p>
           </div>
           <div id="registerError" class="auth-error" style="display: none;"><i class="fas fa-exclamation-circle"></i><span></span></div>
+          <div id="registerSuccess" class="auth-success" style="display: none;"><i class="fas fa-check-circle"></i><span></span></div>
           <form onsubmit="event.preventDefault(); register();">
-            <div class="auth-input-wrapper">
-              <i class="fas fa-user auth-input-icon"></i>
-              <input type="text" id="regUsername" class="auth-input" placeholder="Логин *">
-            </div>
-            <div class="auth-input-wrapper">
-              <i class="fas fa-user-circle auth-input-icon"></i>
-              <input type="text" id="regFullName" class="auth-input" placeholder="ФИО *">
-            </div>
-            <div class="auth-input-wrapper">
-              <i class="fas fa-envelope auth-input-icon"></i>
-              <input type="email" id="regEmail" class="auth-input" placeholder="Email *">
-            </div>
-            <div class="auth-input-wrapper">
-              <i class="fas fa-phone auth-input-icon"></i>
-              <input type="tel" id="regPhone" class="auth-input" placeholder="Телефон">
-            </div>
-            <div class="auth-input-wrapper">
-              <i class="fas fa-lock auth-input-icon"></i>
-              <input type="password" id="regPassword" class="auth-input" placeholder="Пароль *">
-              <button type="button" class="auth-password-eye" onclick="togglePassword('regPassword')"><i class="fas fa-eye-slash"></i></button>
-            </div>
-            <div class="auth-input-wrapper">
-              <i class="fas fa-lock auth-input-icon"></i>
-              <input type="password" id="regPassword2" class="auth-input" placeholder="Подтверждение пароля *">
-              <button type="button" class="auth-password-eye" onclick="togglePassword('regPassword2')"><i class="fas fa-eye-slash"></i></button>
-            </div>
+            <div class="auth-input-wrapper"><i class="fas fa-user auth-input-icon"></i><input type="text" id="regUsername" class="auth-input" placeholder="Логин *"></div>
+            <div class="auth-input-wrapper"><i class="fas fa-user-circle auth-input-icon"></i><input type="text" id="regFullName" class="auth-input" placeholder="ФИО *"></div>
+            <div class="auth-input-wrapper"><i class="fas fa-envelope auth-input-icon"></i><input type="email" id="regEmail" class="auth-input" placeholder="Email *"></div>
+            <div class="auth-input-wrapper"><i class="fas fa-phone auth-input-icon"></i><input type="tel" id="regPhone" class="auth-input" placeholder="Телефон"></div>
+            <div class="auth-input-wrapper"><i class="fas fa-lock auth-input-icon"></i><input type="password" id="regPassword" class="auth-input" placeholder="Пароль *"><button type="button" class="auth-password-eye" onclick="togglePassword('regPassword')"><i class="fas fa-eye-slash"></i></button></div>
+            <div class="auth-input-wrapper"><i class="fas fa-lock auth-input-icon"></i><input type="password" id="regPassword2" class="auth-input" placeholder="Подтверждение пароля *"><button type="button" class="auth-password-eye" onclick="togglePassword('regPassword2')"><i class="fas fa-eye-slash"></i></button></div>
             <label class="auth-checkbox"><input type="checkbox" id="regAgree"><span class="auth-checkbox-text">Я принимаю <a href="#">условия использования</a></span></label>
             <button type="submit" class="auth-btn"><i class="fas fa-user-plus"></i><span>Зарегистрироваться</span></button>
           </form>
@@ -162,40 +122,42 @@
   </div>
 
   <!-- ОСНОВНОЙ КОНТЕНТ -->
-  <main class="container">
+  <main class="orders-page">
+    <h1 class="orders-title"><i class="fas fa-clipboard-list"></i> Мои заказы</h1>
+    
     <!-- Статистика -->
-    <div class="stats-grid-orders" id="statsGrid">
-      <div class="stat-card-order active" data-status="all">
-        <div class="stat-icon-order"><i class="fas fa-list"></i></div>
-        <div class="stat-value-order" id="statAll">0</div>
-        <div class="stat-label-order">Всего заказов</div>
+    <div class="orders-stats" id="statsGrid">
+      <div class="stat-card active" data-status="all">
+        <div class="stat-icon"><i class="fas fa-list"></i></div>
+        <div class="stat-value" id="statAll">0</div>
+        <div class="stat-label">Всего заказов</div>
       </div>
-      <div class="stat-card-order" data-status="new">
-        <div class="stat-icon-order"><i class="fas fa-clock"></i></div>
-        <div class="stat-value-order" id="statNew">0</div>
-        <div class="stat-label-order">Новые</div>
+      <div class="stat-card" data-status="new">
+        <div class="stat-icon"><i class="fas fa-clock"></i></div>
+        <div class="stat-value" id="statNew">0</div>
+        <div class="stat-label">Новые</div>
       </div>
-      <div class="stat-card-order" data-status="processing">
-        <div class="stat-icon-order"><i class="fas fa-spinner fa-spin"></i></div>
-        <div class="stat-value-order" id="statProcessing">0</div>
-        <div class="stat-label-order">В обработке</div>
+      <div class="stat-card" data-status="processing">
+        <div class="stat-icon"><i class="fas fa-spinner fa-spin"></i></div>
+        <div class="stat-value" id="statProcessing">0</div>
+        <div class="stat-label">В обработке</div>
       </div>
-      <div class="stat-card-order" data-status="completed">
-        <div class="stat-icon-order"><i class="fas fa-check-circle"></i></div>
-        <div class="stat-value-order" id="statCompleted">0</div>
-        <div class="stat-label-order">Выполненные</div>
+      <div class="stat-card" data-status="completed">
+        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+        <div class="stat-value" id="statCompleted">0</div>
+        <div class="stat-label">Выполненные</div>
       </div>
     </div>
 
-    <!-- Панель инструментов -->
-    <div class="orders-toolbar-modern">
-      <div class="toolbar-row">
-        <div class="search-box-modern">
+    <!-- Фильтры -->
+    <div class="orders-filters">
+      <div class="filters-row">
+        <div class="search-wrapper">
           <i class="fas fa-search"></i>
-          <input type="text" id="searchInput" class="search-input-modern" placeholder="Поиск по номеру заказа, клиенту или телефону...">
+          <input type="text" id="searchInput" class="search-input" placeholder="Поиск по номеру заказа, клиенту или телефону...">
         </div>
         <div class="filter-group">
-          <select id="statusFilter" class="filter-select-modern">
+          <select id="statusFilter" class="filter-select">
             <option value="all">Все статусы</option>
             <option value="new">Новый</option>
             <option value="processing">В обработке</option>
@@ -206,18 +168,18 @@
             <option value="completed">Выполнен</option>
             <option value="cancelled">Отменён</option>
           </select>
-          <input type="date" id="dateFrom" class="date-input-modern" placeholder="Дата от">
+          <input type="date" id="dateFrom" class="filter-date" placeholder="Дата от">
           <span style="color: var(--text-muted);">—</span>
-          <input type="date" id="dateTo" class="date-input-modern" placeholder="Дата до">
-          <button class="btn-filter-modern" id="applyFiltersBtn"><i class="fas fa-filter"></i> Применить</button>
-          <button class="btn-reset-modern" id="resetFiltersBtn"><i class="fas fa-undo-alt"></i> Сбросить</button>
+          <input type="date" id="dateTo" class="filter-date" placeholder="Дата до">
+          <button class="btn-filter" id="applyFiltersBtn"><i class="fas fa-filter"></i> Применить</button>
+          <button class="btn-reset" id="resetFiltersBtn"><i class="fas fa-undo-alt"></i> Сбросить</button>
         </div>
       </div>
     </div>
 
     <!-- Список заказов -->
-    <div id="ordersList" class="orders-grid-modern">
-      <div class="empty-state-modern">
+    <div id="ordersList" class="orders-list">
+      <div class="empty-state">
         <i class="fas fa-spinner fa-spin"></i>
         <h3>Загрузка заказов...</h3>
         <p>Пожалуйста, подождите</p>
@@ -225,7 +187,7 @@
     </div>
 
     <!-- Пустое состояние -->
-    <div id="emptyState" class="empty-state-modern" style="display: none;">
+    <div id="emptyState" class="empty-state" style="display: none;">
       <i class="fas fa-inbox"></i>
       <h3>У вас пока нет заказов</h3>
       <p>Создайте свою первую конфигурацию щитового оборудования</p>
@@ -233,7 +195,7 @@
     </div>
   </main>
 
-  <!-- ПОДВАЛ КАК В INDEX.HTML -->
+  <!-- ПОДВАЛ -->
   <footer class="footer-enhanced">
     <div class="container">
       <div class="footer-top">
@@ -299,36 +261,14 @@
         </div>
       </div>
       
-      <div class="footer-newsletter">
-        <div class="newsletter-content">
-          <div class="newsletter-text">
-            <i class="fas fa-envelope-open-text"></i>
-            <div>
-              <h4>Будьте в курсе новинок</h4>
-              <p>Подпишитесь на рассылку и получайте информацию о новинках и акциях</p>
-            </div>
-          </div>
-          <div class="newsletter-form">
-            <input type="email" id="newsletterEmail" placeholder="Ваш email">
-            <button onclick="subscribeNewsletter()"><i class="fas fa-paper-plane"></i> Подписаться</button>
-          </div>
-        </div>
-      </div>
-      
       <div class="footer-bottom">
         <div class="footer-copyright"><p>&copy; 2026 АО "Электрощит-Самара". Все права защищены.</p></div>
-        <div class="footer-payment">
-          <i class="fab fa-cc-visa" title="Visa"></i>
-          <i class="fab fa-cc-mastercard" title="Mastercard"></i>
-          <i class="fab fa-cc-mir" title="Мир"></i>
-          <i class="fas fa-credit-card" title="Оплата по счету"></i>
-        </div>
+       
         <div class="footer-developer"><a href="#">Сделано в Самаре</a></div>
       </div>
     </div>
   </footer>
 
-  <!-- Кнопка темы -->
   <button id="themeToggle" class="theme-toggle-btn" title="Переключить тему">
     <i class="fas fa-sun"></i>
     <i class="fas fa-moon"></i>
@@ -338,5 +278,6 @@
   <script src="js/mobile-nav.js"></script>
   <script src="js/scroll-top.js"></script>
   <script src="js/breadcrumbs.js"></script>
+  <script src="js/phone-mask.js"></script>
 </body>
 </html>

@@ -1,41 +1,12 @@
-// mobile-nav.js
+// mobile-nav.js (без нижнего меню)
 
 document.addEventListener("DOMContentLoaded", () => {
-  initMobileBottomNav();
+  // Нижнее меню ОТКЛЮЧЕНО
+  // initMobileBottomNav();
   initSwipeGestures();
 });
 
-function initMobileBottomNav() {
-  // Проверяем, что мы на мобильном
-  if (window.innerWidth > 768) return;
-  
-  // Создаём нижнее меню
-  const bottomNav = document.createElement('nav');
-  bottomNav.className = 'mobile-bottom-nav';
-  bottomNav.innerHTML = `
-    <a href="/" class="mobile-nav-item ${window.location.pathname === '/' ? 'active' : ''}">
-      <i class="fas fa-cogs"></i>
-      <span>Сборка</span>
-    </a>
-    <a href="/#catalog" class="mobile-nav-item">
-      <i class="fas fa-th-large"></i>
-      <span>Каталог</span>
-    </a>
-    <a href="/orders.html" class="mobile-nav-item ${window.location.pathname.includes('orders') ? 'active' : ''}">
-      <i class="fas fa-box"></i>
-      <span>Заказы</span>
-    </a>
-    <button class="mobile-nav-item" onclick="document.getElementById('btnOpenFilters').click()">
-      <i class="fas fa-filter"></i>
-      <span>Фильтры</span>
-    </button>
-  `;
-  
-  document.body.appendChild(bottomNav);
-  
-  // Добавляем отступ снизу для контента
-  document.body.style.paddingBottom = '70px';
-}
+// Функция initMobileBottomNav удалена
 
 function initSwipeGestures() {
   const filterSidebar = document.getElementById('filterSidebar');

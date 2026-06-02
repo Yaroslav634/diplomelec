@@ -19,9 +19,6 @@ let catalogFilters = {
   manufacturer: "all"
 };
 
-let currentPage = 1;
-let itemsPerPage = 12;
-let totalPages = 1;
 let currentSort = 'default';
 
 // ============ ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ============
@@ -49,8 +46,7 @@ function showLoading(show) {
   if (loading) loading.style.display = show ? "flex" : "none";
 }
 
-// ============ ФУНКЦИИ АВТОРИЗАЦИИ (РАБОЧАЯ ВЕРСИЯ) ============
-
+// ============ ФУНКЦИИ АВТОРИЗАЦИИ ============
 function closeAuthModal() {
   var modal = document.getElementById('authModal');
   if (modal) {
@@ -335,23 +331,39 @@ async function loadCategoriesData() {
     const response = await fetch(`${API_BASE_URL}/categories`);
     categories = await response.json();
     const categoriesList = document.getElementById("categoriesList");
-    const catalogSelect = document.getElementById("catalogCategory");
     if (categoriesList) {
       if (categories.length === 0) categoriesList.innerHTML = '<div class="empty-message">Нет категорий</div>';
       else {
         categoriesList.innerHTML = categories.map(cat => `
           <div class="category-item ${selectedCategory === cat.id ? "active" : ""}" onclick="selectCategory(${cat.id})">
-            <h4>${escapeHtml(cat.name)}</h4>
-            <p>${escapeHtml(cat.description || "")}</p>
+            <div class="category-icon"><i class="fas ${getCategoryIcon(cat.name)}"></i></div>
+            <div class="category-info">
+              <h4>${escapeHtml(cat.name)}</h4>
+              <p>${escapeHtml(cat.description || "")}</p>
+            </div>
+            <div class="category-count">${allComponents.filter(c => c.category_id === cat.id).length}</div>
           </div>
         `).join("");
       }
     }
-    if (catalogSelect) {
-      catalogSelect.innerHTML = '<option value="">Все категории</option>' + categories.map(cat => `<option value="${cat.id}">${escapeHtml(cat.name)}</option>`).join("");
-    }
-    renderCategoriesModern();
-  } catch (error) { console.error("Ошибка загрузки категорий:", error); }
+    const countEl = document.getElementById("categoriesCount");
+    if (countEl) countEl.textContent = categories.length;
+  } catch (error) { 
+    console.error("Ошибка загрузки категорий:", error); 
+  }
+}
+
+function getCategoryIcon(categoryName) {
+  const icons = {
+    'Автоматические выключатели': 'fa-bolt',
+    'Вводно-распределительные устройства': 'fa-tower-broadcast',
+    'Силовые щиты': 'fa-industry',
+    'Щиты освещения': 'fa-lightbulb',
+    'Устройства защитного отключения': 'fa-shield-alt',
+    'Контакторы и пускатели': 'fa-play-circle',
+    'Шкафы и корпуса': 'fa-box'
+  };
+  return icons[categoryName] || 'fa-folder';
 }
 
 function selectCategory(categoryId) {
@@ -366,38 +378,51 @@ async function loadComponentsData() {
     if (selectedCategory) url += `?category_id=${selectedCategory}`;
     const response = await fetch(url);
     allComponents = await response.json();
+    
     const componentsList = document.getElementById("componentsList");
-    if (!componentsList) return;
-    if (allComponents.length === 0) componentsList.innerHTML = '<div class="empty-message">Нет компонентов</div>';
-    else {
-      componentsList.innerHTML = allComponents.map(comp => {
-        const isSelected = selectedComponents.some((c) => c.id === comp.id);
-        return `
-          <div class="component-item">
-            <div class="component-info">
-              <h4>${escapeHtml(comp.name)}</h4>
-              <p>${escapeHtml(comp.description || "")}</p>
-              <p><small>${escapeHtml(comp.manufacturer || "")}</small></p>
-              <span class="stock-status ${comp.in_stock ? "stock-in" : "stock-out"}">
-                <i class="fas fa-${comp.in_stock ? "check-circle" : "times-circle"}"></i>
-                ${comp.in_stock ? "В наличии" : "Нет в наличии"}
-              </span>
+    if (componentsList) {
+      if (allComponents.length === 0) {
+        componentsList.innerHTML = '<div class="empty-message">Нет компонентов</div>';
+      } else {
+        componentsList.innerHTML = allComponents.map(comp => {
+          const isSelected = selectedComponents.some((c) => c.id === comp.id);
+          return `
+            <div class="component-item" onclick="openComponentDetail(${comp.id})">
+              <div class="component-info">
+                <h4>${escapeHtml(comp.name)}</h4>
+                <p>${escapeHtml(comp.description || "")}</p>
+                <p><small>${escapeHtml(comp.manufacturer || "")}</small></p>
+                <span class="stock-badge ${comp.in_stock ? '' : 'out'}">
+                  <i class="fas fa-${comp.in_stock ? 'check-circle' : 'times-circle'}"></i>
+                  ${comp.in_stock ? 'В наличии' : 'Нет в наличии'}
+                </span>
+              </div>
+              <div class="component-actions">
+                <div class="component-price">${new Intl.NumberFormat("ru-RU").format(comp.price)} ₽</div>
+                <button class="add-btn" onclick="event.stopPropagation(); addToCart(${comp.id})" ${isSelected || !comp.in_stock ? "disabled" : ""}>
+                  <i class="fas fa-${isSelected ? "check" : "plus"}"></i>
+                  ${isSelected ? "Добавлено" : "Добавить"}
+                </button>
+              </div>
             </div>
-            <div class="component-details">
-              <div class="component-price">${new Intl.NumberFormat("ru-RU").format(comp.price)} ₽</div>
-              <button class="add-btn" onclick="addToCart(${comp.id})" ${isSelected ? "disabled" : ""}>
-                <i class="fas fa-${isSelected ? "check" : "plus"}"></i>
-                ${isSelected ? "Добавлено" : "Добавить"}
-              </button>
-            </div>
-          </div>
-        `;
-      }).join("");
+          `;
+        }).join("");
+      }
     }
+    
+    const countEl = document.getElementById("componentsCount");
+    if (countEl) countEl.textContent = allComponents.length;
+    
     filterCatalog();
-    renderComponentsModern();
-  } catch (error) { console.error("Ошибка загрузки компонентов:", error); }
-  finally { showLoading(false); }
+  } catch (error) { 
+    console.error("Ошибка загрузки компонентов:", error);
+    const componentsList = document.getElementById("componentsList");
+    if (componentsList) {
+      componentsList.innerHTML = '<div class="empty-message">Ошибка загрузки компонентов</div>';
+    }
+  } finally { 
+    showLoading(false); 
+  }
 }
 
 async function loadServicesData() {
@@ -405,29 +430,39 @@ async function loadServicesData() {
     const response = await fetch(`${API_BASE_URL}/services`);
     allServices = await response.json();
     const servicesList = document.getElementById("servicesList");
-    if (!servicesList) return;
-    if (allServices.length === 0) servicesList.innerHTML = '<div class="empty-message">Нет услуг</div>';
-    else {
-      servicesList.innerHTML = allServices.map(serv => `
-        <div class="service-item">
-          <label>
-            <input type="checkbox" class="service-checkbox" value="${serv.id}" onchange="toggleService(${serv.id}, ${serv.price}, '${serv.name.replace(/'/g, "\\'")}')">
-            ${escapeHtml(serv.name)} (${new Intl.NumberFormat("ru-RU").format(serv.price)} ₽)
-          </label>
-        </div>
-      `).join("");
+    if (servicesList) {
+      if (allServices.length === 0) {
+        servicesList.innerHTML = '<div class="empty-message">Нет услуг</div>';
+      } else {
+        servicesList.innerHTML = allServices.map(serv => `
+          <div class="service-item">
+            <label>
+              <input type="checkbox" class="service-checkbox" value="${serv.id}" onchange="toggleService(${serv.id}, ${serv.price}, '${serv.name.replace(/'/g, "\\'")}')">
+              <span>${escapeHtml(serv.name)}</span>
+            </label>
+            <span class="service-price">${new Intl.NumberFormat("ru-RU").format(serv.price)} ₽</span>
+          </div>
+        `).join("");
+      }
     }
-    renderServicesModern();
-  } catch (error) { console.error("Ошибка загрузки услуг:", error); }
+  } catch (error) { 
+    console.error("Ошибка загрузки услуг:", error); 
+  }
 }
 
 function toggleService(serviceId, price, name) {
   const checkbox = event.target;
-  if (checkbox.checked) { selectedServices.push({ id: serviceId, name, price }); showNotification(`Услуга "${name}" добавлена`, "success"); }
-  else { selectedServices = selectedServices.filter(s => s.id !== serviceId); showNotification(`Услуга "${name}" удалена`, "info"); }
+  if (checkbox.checked) { 
+    selectedServices.push({ id: serviceId, name, price }); 
+    showNotification(`Услуга "${name}" добавлена`, "success"); 
+  } else { 
+    selectedServices = selectedServices.filter(s => s.id !== serviceId); 
+    showNotification(`Услуга "${name}" удалена`, "info"); 
+  }
   updateTotal();
 }
 
+// ============ КОРЗИНА ============
 function addToCart(componentId) {
   const component = allComponents.find((c) => c.id === componentId);
   if (!component) return;
@@ -469,40 +504,37 @@ function updateCart() {
   if (!cartEl) return;
 
   if (selectedComponents.length === 0) {
-    cartEl.innerHTML = '<div class="empty-message">Нет выбранных компонентов</div>';
+    cartEl.innerHTML = `
+      <div class="empty-cart">
+        <i class="fas fa-box-open"></i>
+        <p>Корзина пуста</p>
+        <span>Добавьте компоненты из каталога</span>
+      </div>
+    `;
   } else {
     cartEl.innerHTML = selectedComponents.map(comp => `
-      <div class="selected-item">
-        <div style="flex: 1;">
+      <div class="cart-item">
+        <div class="cart-item-info">
           <h4>${escapeHtml(comp.name)}</h4>
-          <p>${new Intl.NumberFormat("ru-RU").format(comp.price)} ₽</p>
-          <div style="display: flex; gap: 10px; margin-top: 8px;">
-            <button onclick="changeQuantity(${comp.id}, -1)" style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-panel); cursor: pointer;"><i class="fas fa-minus"></i></button>
+          <div class="cart-item-price">${new Intl.NumberFormat("ru-RU").format(comp.price)} ₽</div>
+          <div class="quantity-controls">
+            <button class="quantity-btn" onclick="changeQuantity(${comp.id}, -1)"><i class="fas fa-minus"></i></button>
             <span>${comp.quantity || 1}</span>
-            <button onclick="changeQuantity(${comp.id}, 1)" style="width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-panel); cursor: pointer;"><i class="fas fa-plus"></i></button>
+            <button class="quantity-btn" onclick="changeQuantity(${comp.id}, 1)"><i class="fas fa-plus"></i></button>
           </div>
         </div>
-        <button onclick="removeFromCart(${comp.id})" style="background: var(--danger-color); color: white; border: none; width: 36px; height: 36px; border-radius: 10px; cursor: pointer;"><i class="fas fa-trash-alt"></i></button>
+        <button class="remove-cart-btn" onclick="removeFromCart(${comp.id})">
+          <i class="fas fa-trash-alt"></i>
+        </button>
       </div>
-    `).join("");
+    `).join('');
   }
-  renderCartModern();
+  
+  const cartCount = document.getElementById("cartCount");
+  if (cartCount) cartCount.textContent = selectedComponents.length;
 }
 
 function updateCartBadge() {
-  let badge = document.querySelector('.cart-badge');
-  const cartTitle = document.querySelector('.configurator-panel:last-child h3');
-  if (!badge && cartTitle) {
-    badge = document.createElement('span');
-    badge.className = 'cart-badge';
-    cartTitle.appendChild(badge);
-  }
-  if (badge) {
-    const count = selectedComponents.length;
-    badge.textContent = count;
-    if (count === 0) badge.classList.add('hidden');
-    else badge.classList.remove('hidden');
-  }
   const cartCount = document.getElementById("cartCount");
   if (cartCount) cartCount.textContent = selectedComponents.length;
 }
@@ -521,6 +553,7 @@ function updateTotal() {
   if (saveConfigBtn) saveConfigBtn.disabled = selectedComponents.length === 0;
 }
 
+// ============ ФИЛЬТРАЦИЯ КАТАЛОГА ============
 function filterCatalog() {
   if (!allComponents || allComponents.length === 0) return;
   
@@ -528,11 +561,19 @@ function filterCatalog() {
 
   if (catalogFilters.search) {
     const searchLower = catalogFilters.search.toLowerCase();
-    filtered = filtered.filter(c => (c.name && c.name.toLowerCase().includes(searchLower)) || (c.description && c.description.toLowerCase().includes(searchLower)) || (c.manufacturer && c.manufacturer.toLowerCase().includes(searchLower)));
+    filtered = filtered.filter(c => (c.name && c.name.toLowerCase().includes(searchLower)) || 
+      (c.description && c.description.toLowerCase().includes(searchLower)) || 
+      (c.manufacturer && c.manufacturer.toLowerCase().includes(searchLower)));
   }
   if (catalogFilters.categoryId) filtered = filtered.filter(c => c.category_id == catalogFilters.categoryId);
-  if (catalogFilters.priceMin) { const minPrice = parseFloat(catalogFilters.priceMin); if (!isNaN(minPrice)) filtered = filtered.filter(c => c.price >= minPrice); }
-  if (catalogFilters.priceMax) { const maxPrice = parseFloat(catalogFilters.priceMax); if (!isNaN(maxPrice)) filtered = filtered.filter(c => c.price <= maxPrice); }
+  if (catalogFilters.priceMin) { 
+    const minPrice = parseFloat(catalogFilters.priceMin); 
+    if (!isNaN(minPrice)) filtered = filtered.filter(c => c.price >= minPrice); 
+  }
+  if (catalogFilters.priceMax) { 
+    const maxPrice = parseFloat(catalogFilters.priceMax); 
+    if (!isNaN(maxPrice)) filtered = filtered.filter(c => c.price <= maxPrice); 
+  }
   if (catalogFilters.inStock !== "all") filtered = filtered.filter(c => c.in_stock === (catalogFilters.inStock === "true"));
   if (catalogFilters.manufacturer !== "all" && catalogFilters.manufacturer) filtered = filtered.filter(c => c.manufacturer === catalogFilters.manufacturer);
 
@@ -541,36 +582,45 @@ function filterCatalog() {
   else if (currentSort === 'name-asc') filtered.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ru'));
   else if (currentSort === 'name-desc') filtered.sort((a, b) => (b.name || '').localeCompare(a.name || '', 'ru'));
 
-  const catalogGrid = document.getElementById("catalogGrid");
-  if (!catalogGrid) return;
+  const componentsList = document.getElementById("componentsList");
+  if (!componentsList) return;
 
   if (filtered.length === 0) {
-    catalogGrid.innerHTML = '<div class="empty-message">Ничего не найдено</div>';
-    const showMoreContainer = document.getElementById('showMoreContainer');
-    if (showMoreContainer) showMoreContainer.innerHTML = '';
+    componentsList.innerHTML = '<div class="empty-message">Ничего не найдено</div>';
     return;
   }
 
-  if (typeof window.renderCatalogWithShowMore === 'function') {
-    window.renderCatalogWithShowMore(filtered);
-  } else {
-    catalogGrid.innerHTML = filtered.map(comp => `
-      <div class="component-card" onclick="openComponentDetail(${comp.id})">
-        <div class="card-image">${comp.image_url ? `<img src="${comp.image_url}" alt="${escapeHtml(comp.name)}">` : '<div class="no-photo"><i class="fas fa-microchip"></i></div>'}</div>
-        <h4>${escapeHtml(comp.name)}</h4>
-        <div class="manufacturer">${escapeHtml(comp.manufacturer || "Производитель не указан")}</div>
-        <div class="description">${escapeHtml(comp.description || "Описание отсутствует")}</div>
-        <div class="price">${new Intl.NumberFormat("ru-RU").format(comp.price)} ₽</div>
-        <div class="card-actions"><button class="btn btn-primary" onclick="event.stopPropagation(); addToCart(${comp.id})" ${!comp.in_stock ? 'disabled' : ''}>В корзину</button></div>
+  componentsList.innerHTML = filtered.map(comp => {
+    const isSelected = selectedComponents.some((c) => c.id === comp.id);
+    return `
+      <div class="component-item" onclick="openComponentDetail(${comp.id})">
+        <div class="component-info">
+          <h4>${escapeHtml(comp.name)}</h4>
+          <p>${escapeHtml(comp.description || "")}</p>
+          <p><small>${escapeHtml(comp.manufacturer || "")}</small></p>
+          <span class="stock-badge ${comp.in_stock ? '' : 'out'}">
+            <i class="fas fa-${comp.in_stock ? 'check-circle' : 'times-circle'}"></i>
+            ${comp.in_stock ? 'В наличии' : 'Нет в наличии'}
+          </span>
+        </div>
+        <div class="component-actions">
+          <div class="component-price">${new Intl.NumberFormat("ru-RU").format(comp.price)} ₽</div>
+          <button class="add-btn" onclick="event.stopPropagation(); addToCart(${comp.id})" ${isSelected || !comp.in_stock ? "disabled" : ""}>
+            <i class="fas fa-${isSelected ? "check" : "plus"}"></i>
+            ${isSelected ? "Добавлено" : "Добавить"}
+          </button>
+        </div>
       </div>
-    `).join("");
-  }
+    `;
+  }).join("");
 }
 
+// ============ АВТОРИЗАЦИЯ ПОЛЬЗОВАТЕЛЯ ============
 async function checkAuth() {
   try {
     const response = await fetch(`${API_BASE_URL}/me`, { credentials: "include" });
     const data = await response.json();
+    
     if (data.success && data.authenticated) {
       currentUser = data.user;
       const authSection = document.getElementById("authSection");
@@ -590,7 +640,9 @@ async function checkAuth() {
         <div class="user-menu" style="display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.08); padding: 6px 20px 6px 16px; border-radius: 50px;">
           <span><i class="fas fa-user"></i> ${escapeHtml(currentUser.full_name || currentUser.username)}</span>
           <span class="role-badge" style="background: ${roleColor}; color: white; padding: 5px 12px; border-radius: 30px; font-size: 0.75rem;">${roleText}</span>
-          ${currentUser.role === "admin" || currentUser.role === "manager" ? `<a href="/admin.html" class="nav-link" style="color: white; background: rgba(59,130,246,0.2); padding: 6px 14px; border-radius: 30px;"><i class="fas fa-cog"></i> Админка</a>` : ""}
+          ${currentUser.role === "admin" || currentUser.role === "manager" 
+            ? `<a href="/admin.html" class="nav-link" style="color: white; background: rgba(59,130,246,0.2); padding: 6px 14px; border-radius: 30px;"><i class="fas fa-cog"></i> Админка</a>` 
+            : ""}
           <button onclick="logout()" class="logout-btn" style="background: #ef4444; color: white; border: none; padding: 6px 14px; border-radius: 30px; cursor: pointer;">
             <i class="fas fa-sign-out-alt"></i> Выйти
           </button>
@@ -629,9 +681,17 @@ async function logout() {
   }
 }
 
+// ============ ОФОРМЛЕНИЕ ЗАКАЗА ============
 function showOrderModal() {
-  if (!currentUser) { showNotification("Необходимо авторизоваться", "warning"); showLoginModal(); return; }
-  if (selectedComponents.length === 0) { showNotification("Добавьте хотя бы один компонент", "warning"); return; }
+  if (!currentUser) { 
+    showNotification("Необходимо авторизоваться", "warning"); 
+    showLoginModal(); 
+    return; 
+  }
+  if (selectedComponents.length === 0) { 
+    showNotification("Добавьте хотя бы один компонент", "warning"); 
+    return; 
+  }
   updateOrderSummary();
   const orderModal = document.getElementById("orderModal");
   if (orderModal) orderModal.style.display = "flex";
@@ -660,8 +720,15 @@ function toggleDeliveryAddress() {
 
 async function submitOrder() {
   const customerName = document.getElementById("orderModalCustomerName")?.value.trim();
-  if (!customerName) { showNotification("Введите ваше имя", "warning"); return; }
-  if (selectedComponents.length === 0) { showNotification("Добавьте компоненты", "warning"); return; }
+  if (!customerName) { 
+    showNotification("Введите ваше имя", "warning"); 
+    return; 
+  }
+  if (selectedComponents.length === 0) { 
+    showNotification("Добавьте компоненты", "warning"); 
+    return; 
+  }
+  
   const totals = calculateTotal();
   const orderData = {
     customer_name: customerName,
@@ -672,19 +739,37 @@ async function submitOrder() {
     delivery_address: document.getElementById("orderModalDeliveryAddress")?.value.trim() || null,
     payment_method: document.getElementById("orderModalPaymentMethod")?.value || "cash",
     config_name: document.getElementById("orderModalConfigName")?.value.trim() || "Моя конфигурация",
-    components: selectedComponents.map(c => ({ id: parseInt(c.id), name: c.name, price: parseFloat(c.price), quantity: parseInt(c.quantity || 1) })),
-    services: selectedServices.map(s => ({ id: parseInt(s.id), name: s.name, price: parseFloat(s.price) })),
+    components: selectedComponents.map(c => ({ 
+      id: parseInt(c.id), 
+      name: c.name, 
+      price: parseFloat(c.price), 
+      quantity: parseInt(c.quantity || 1) 
+    })),
+    services: selectedServices.map(s => ({ 
+      id: parseInt(s.id), 
+      name: s.name, 
+      price: parseFloat(s.price) 
+    })),
     total_amount: totals.total,
     comments: document.getElementById("orderModalComments")?.value.trim() || null,
   };
+  
   const confirmBtn = document.getElementById("confirmOrderBtn");
   if (!confirmBtn) return;
+  
   const originalText = confirmBtn.innerHTML;
   confirmBtn.disabled = true;
   confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Оформление...';
+  
   try {
-    const response = await fetch(`${API_BASE_URL}/orders`, { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include", body: JSON.stringify(orderData) });
+    const response = await fetch(`${API_BASE_URL}/orders`, { 
+      method: "POST", 
+      headers: { "Content-Type": "application/json" }, 
+      credentials: "include", 
+      body: JSON.stringify(orderData) 
+    });
     const data = await response.json();
+    
     if (data.success) {
       closeOrderModal();
       selectedComponents = [];
@@ -695,165 +780,33 @@ async function submitOrder() {
       loadComponentsData();
       updateCartBadge();
       showNotification(`Заказ №${data.orderNumber} успешно создан!`, "success");
-      setTimeout(() => { if (confirm("Перейти к моим заказам?")) window.location.href = "/orders.html"; }, 500);
-    } else { showNotification("Ошибка: " + data.message, "error"); }
-  } catch (error) { showNotification("Ошибка при создании заказа", "error"); }
-  finally { confirmBtn.disabled = false; confirmBtn.innerHTML = originalText; }
-}
-
-function renderCategoriesModern() {
-  const container = document.getElementById("categoriesList");
-  if (!container) return;
-  if (!categories || categories.length === 0) {
-    container.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i><p>Нет категорий</p></div>';
-    return;
-  }
-  container.innerHTML = categories.map(cat => `
-    <div class="category-item ${selectedCategory === cat.id ? 'active' : ''}" onclick="selectCategory(${cat.id})">
-      <div class="category-icon"><i class="fas ${getCategoryIcon(cat.name)}"></i></div>
-      <div class="category-info">
-        <h4>${escapeHtml(cat.name)}</h4>
-        <p>${escapeHtml(cat.description || '')}</p>
-      </div>
-      <div class="category-count">${allComponents.filter(c => c.category_id === cat.id).length}</div>
-    </div>
-  `).join('');
-  const countEl = document.getElementById("categoriesCount");
-  if (countEl) countEl.textContent = categories.length;
-}
-
-function getCategoryIcon(categoryName) {
-  const icons = {
-    'Автоматические выключатели': 'fa-bolt',
-    'Вводно-распределительные устройства': 'fa-tower-broadcast',
-    'Силовые щиты': 'fa-industry',
-    'Щиты освещения': 'fa-lightbulb',
-    'Устройства защитного отключения': 'fa-shield-alt',
-    'Контакторы и пускатели': 'fa-play-circle',
-    'Шкафы и корпуса': 'fa-box'
-  };
-  return icons[categoryName] || 'fa-folder';
-}
-
-function renderComponentsModern() {
-  const container = document.getElementById("componentsList");
-  if (!container) return;
-  if (!allComponents || allComponents.length === 0) {
-    container.innerHTML = '<div class="empty-state"><i class="fas fa-microchip"></i><p>Выберите категорию</p></div>';
-    return;
-  }
-  container.innerHTML = allComponents.map(comp => {
-    const isSelected = selectedComponents.some(c => c.id === comp.id);
-    return `
-      <div class="component-item" onclick="openComponentDetail(${comp.id})">
-        <div class="component-info">
-          <h4>${escapeHtml(comp.name)}</h4>
-          <p>${escapeHtml(comp.description || '')}</p>
-          <span class="stock-badge ${comp.in_stock ? '' : 'out'}">
-            <i class="fas fa-${comp.in_stock ? 'check-circle' : 'times-circle'}"></i>
-            ${comp.in_stock ? 'В наличии' : 'Нет в наличии'}
-          </span>
-        </div>
-        <div class="component-actions">
-          <div class="component-price">${new Intl.NumberFormat("ru-RU").format(comp.price)} ₽</div>
-          <button class="add-btn" onclick="event.stopPropagation(); addToCart(${comp.id})" ${isSelected || !comp.in_stock ? 'disabled' : ''}>
-            <i class="fas fa-${isSelected ? 'check' : 'plus'}"></i>
-            ${isSelected ? 'Добавлено' : 'Добавить'}
-          </button>
-        </div>
-      </div>
-    `;
-  }).join('');
-  const countEl = document.getElementById("componentsCount");
-  if (countEl) countEl.textContent = allComponents.length;
-}
-
-function renderCartModern() {
-  const container = document.getElementById("selectedComponents");
-  if (!container) return;
-  if (selectedComponents.length === 0) {
-    container.innerHTML = `
-      <div class="empty-cart">
-        <i class="fas fa-box-open"></i>
-        <p>Корзина пуста</p>
-        <span>Добавьте компоненты из каталога</span>
-      </div>
-    `;
-    return;
-  }
-  container.innerHTML = selectedComponents.map(comp => `
-    <div class="cart-item">
-      <div class="cart-item-info">
-        <h4>${escapeHtml(comp.name)}</h4>
-        <div class="cart-item-price">${new Intl.NumberFormat("ru-RU").format(comp.price)} ₽</div>
-        <div class="quantity-controls">
-          <button class="quantity-btn" onclick="changeQuantity(${comp.id}, -1)"><i class="fas fa-minus"></i></button>
-          <span>${comp.quantity || 1}</span>
-          <button class="quantity-btn" onclick="changeQuantity(${comp.id}, 1)"><i class="fas fa-plus"></i></button>
-        </div>
-      </div>
-      <button class="remove-cart-btn" onclick="removeFromCart(${comp.id})">
-        <i class="fas fa-trash-alt"></i>
-      </button>
-    </div>
-  `).join('');
-  const cartCount = document.getElementById("cartCount");
-  if (cartCount) cartCount.textContent = selectedComponents.length;
-}
-
-function renderServicesModern() {
-  const container = document.getElementById("servicesList");
-  if (!container) return;
-  if (!allServices || allServices.length === 0) {
-    container.innerHTML = '<div class="empty-state"><p>Нет доступных услуг</p></div>';
-    return;
-  }
-  container.innerHTML = allServices.map(serv => `
-    <div class="service-item">
-      <label>
-        <input type="checkbox" class="service-checkbox" value="${serv.id}" onchange="toggleService(${serv.id}, ${serv.price}, '${serv.name.replace(/'/g, "\\'")}')">
-        <span>${escapeHtml(serv.name)}</span>
-      </label>
-      <span class="service-price">${new Intl.NumberFormat("ru-RU").format(serv.price)} ₽</span>
-    </div>
-  `).join('');
-}
-
-function filterComponents() {
-  const searchTerm = document.getElementById("searchComponents")?.value.toLowerCase();
-  document.querySelectorAll("#componentsList .component-item").forEach(item => {
-    item.style.display = !searchTerm || item.textContent.toLowerCase().includes(searchTerm) ? "" : "none";
-  });
-}
-
-function initThemeToggle() {
-  document.documentElement.removeAttribute("data-theme");
-  localStorage.setItem("theme", "light");
-  const btn = document.createElement("button");
-  btn.id = "themeToggle";
-  btn.className = "theme-toggle-btn";
-  btn.innerHTML = '<i class="fas fa-sun"></i><i class="fas fa-moon"></i>';
-  document.body.appendChild(btn);
-  btn.addEventListener("click", () => {
-    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
-    if (isDark) {
-      document.documentElement.removeAttribute("data-theme");
-      localStorage.setItem("theme", "light");
-    } else {
-      document.documentElement.setAttribute("data-theme", "dark");
-      localStorage.setItem("theme", "dark");
+      setTimeout(() => { 
+        if (confirm("Перейти к моим заказам?")) window.location.href = "/orders.html"; 
+      }, 500);
+    } else { 
+      showNotification("Ошибка: " + data.message, "error"); 
     }
-  });
+  } catch (error) { 
+    showNotification("Ошибка при создании заказа", "error"); 
+  } finally { 
+    confirmBtn.disabled = false; 
+    confirmBtn.innerHTML = originalText; 
+  }
 }
 
+// ============ ДЕТАЛИ КОМПОНЕНТА ============
 function openComponentDetail(componentId) {
   const comp = allComponents.find(c => c.id === componentId);
   if (!comp) return;
 
   const related = allComponents.filter(c => c.category_id === comp.category_id && c.id !== comp.id).slice(0, 4);
 
-  const imageHTML = comp.image_url ? `<img src="${comp.image_url}" alt="${comp.name}" onerror="this.style.display='none';">` : '';
-  const noPhotoHTML = `<div class="no-photo" style="display: ${comp.image_url ? 'none' : 'flex'};"><i class="fas fa-microchip" style="font-size: 4rem; opacity: 0.4;"></i></div>`;
+  const imageHTML = comp.image_url 
+    ? `<img src="${comp.image_url}" alt="${escapeHtml(comp.name)}" 
+         onerror="this.style.display='none'; this.parentElement.querySelector('.no-photo').style.display='flex';">`
+    : '';
+
+  const noPhotoHTML = `<div class="no-photo" style="display: ${comp.image_url ? 'none' : 'flex'};"><i class="fas fa-microchip"></i></div>`;
 
   const specsHTML = [
     { label: "Производитель", value: comp.manufacturer || "Не указан", icon: "fa-industry" },
@@ -861,25 +814,66 @@ function openComponentDetail(componentId) {
     { label: "Мощность", value: comp.power_rating || "—", icon: "fa-bolt" },
     { label: "Напряжение", value: comp.voltage || "—", icon: "fa-plug" },
     { label: "Наличие", value: comp.in_stock ? "В наличии" : "Нет в наличии", icon: comp.in_stock ? "fa-check-circle" : "fa-times-circle" }
-  ].map(s => `<div class="component-spec-item"><span class="component-spec-label"><i class="fas ${s.icon}"></i> ${s.label}</span><span class="component-spec-value">${escapeHtml(s.value)}</span></div>`).join("");
+  ].map(s => `
+    <div class="component-spec-item">
+      <span class="component-spec-label"><i class="fas ${s.icon}"></i> ${s.label}</span>
+      <span class="component-spec-value">${escapeHtml(s.value)}</span>
+    </div>
+  `).join("");
 
   let relatedHTML = '';
   if (related.length > 0) {
-    relatedHTML = `<div class="related-section"><h4>Похожие товары</h4><div class="related-grid">${related.map(r => `<div class="related-card" onclick="openComponentDetail(${r.id})"><div class="related-card-image">${r.image_url ? `<img src="${r.image_url}" alt="${r.name}">` : '<i class="fas fa-microchip"></i>'}</div><h5>${escapeHtml(r.name)}</h5><div class="price">${new Intl.NumberFormat("ru-RU").format(r.price)} ₽</div></div>`).join("")}</div></div>`;
+    relatedHTML = `
+      <div class="related-section">
+        <h4><i class="fas fa-layer-group"></i> Похожие товары</h4>
+        <div class="related-grid">
+          ${related.map(r => `
+            <div class="related-card" onclick="openComponentDetail(${r.id})">
+              <div class="related-card-image">
+                ${r.image_url 
+                  ? `<img src="${r.image_url}" alt="${r.name}" 
+                       onerror="this.style.display='none'; this.parentElement.querySelector('.no-photo').style.display='flex';">`
+                  : '<div class="no-photo"><i class="fas fa-microchip"></i></div>'}
+              </div>
+              <h5>${escapeHtml(r.name)}</h5>
+              <div class="price">${new Intl.NumberFormat("ru-RU").format(r.price)} ₽</div>
+            </div>
+          `).join("")}
+        </div>
+      </div>`;
   }
 
   const html = `
     <div class="component-detail-grid">
-      <div class="component-detail-image">${imageHTML}${noPhotoHTML}${!comp.in_stock ? '<div class="out-of-stock-badge">Нет в наличии</div>' : ''}</div>
+      <div class="component-detail-image">
+        ${imageHTML}
+        ${noPhotoHTML}
+        ${!comp.in_stock ? '<div class="out-of-stock-badge">Нет в наличии</div>' : ''}
+      </div>
       <div class="component-detail-info">
-        <div class="detail-header"><h2>${escapeHtml(comp.name)}</h2>${comp.manufacturer ? `<span class="detail-manufacturer">${escapeHtml(comp.manufacturer)}</span>` : ''}</div>
+        <div class="detail-header">
+          <h2>${escapeHtml(comp.name)}</h2>
+          ${comp.manufacturer ? `<span class="detail-manufacturer"><i class="fas fa-industry"></i> ${escapeHtml(comp.manufacturer)}</span>` : ''}
+        </div>
         <p class="detail-description">${escapeHtml(comp.description || "Описание отсутствует")}</p>
-        <div class="component-detail-price">${new Intl.NumberFormat("ru-RU").format(comp.price)} ₽ ${comp.in_stock ? '<span class="price-available">В наличии</span>' : '<span class="price-unavailable">Нет в наличии</span>'}</div>
+        <div class="component-detail-price">
+          ${new Intl.NumberFormat("ru-RU").format(comp.price)} ₽
+          ${comp.in_stock 
+            ? '<span class="price-available"><i class="fas fa-check"></i> В наличии</span>' 
+            : '<span class="price-unavailable"><i class="fas fa-times"></i> Нет в наличии</span>'}
+        </div>
         <div class="detail-divider"></div>
-        <h4>Характеристики</h4>
+        <h4><i class="fas fa-list-ul"></i> Характеристики</h4>
         <div class="component-specs">${specsHTML}</div>
         ${relatedHTML}
-        <div class="detail-actions"><button class="btn btn-primary" onclick="addToCart(${comp.id}); closeComponentDetail();" ${!comp.in_stock ? 'disabled' : ''}>Добавить в корзину</button></div>
+        <div class="detail-actions">
+          <button class="btn btn-primary" onclick="addToCart(${comp.id}); closeComponentDetail();" ${!comp.in_stock ? 'disabled' : ''}>
+            <i class="fas fa-cart-plus"></i> ${comp.in_stock ? 'Добавить в корзину' : 'Нет в наличии'}
+          </button>
+          <button class="btn btn-secondary" onclick="closeComponentDetail()">
+            <i class="fas fa-times"></i> Закрыть
+          </button>
+        </div>
       </div>
     </div>
   `;
@@ -889,7 +883,15 @@ function openComponentDetail(componentId) {
     modal = document.createElement('div');
     modal.className = 'modal';
     modal.id = 'componentDetailModal';
-    modal.innerHTML = `<div class="modal-content large"><div class="modal-header"><h2>Детали компонента</h2><span class="close" onclick="closeComponentDetail()">&times;</span></div><div id="componentDetailContent"></div><div class="modal-footer"><button class="btn btn-secondary" onclick="closeComponentDetail()">Закрыть</button></div></div>`;
+    modal.innerHTML = `
+      <div class="modal-content large">
+        <div class="modal-header">
+          <h2><i class="fas fa-info-circle"></i> Детали компонента</h2>
+          <span class="close" onclick="closeComponentDetail()">&times;</span>
+        </div>
+        <div id="componentDetailContent"></div>
+      </div>
+    `;
     document.body.appendChild(modal);
   }
 
@@ -902,112 +904,149 @@ function closeComponentDetail() {
   if (modal) modal.style.display = "none";
 }
 
+// ============ ТЕМА ============
+function initThemeToggle() {
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark");
+  } else {
+    document.documentElement.removeAttribute("data-theme");
+  }
+  
+  const existingBtn = document.getElementById("themeToggle");
+  if (existingBtn) return;
+  
+  const btn = document.createElement("button");
+  btn.id = "themeToggle";
+  btn.className = "theme-toggle-btn";
+  btn.innerHTML = '<i class="fas fa-sun"></i><i class="fas fa-moon"></i>';
+  document.body.appendChild(btn);
+  
+  btn.addEventListener("click", () => {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    if (isDark) {
+      document.documentElement.removeAttribute("data-theme");
+      localStorage.setItem("theme", "light");
+    } else {
+      document.documentElement.setAttribute("data-theme", "dark");
+      localStorage.setItem("theme", "dark");
+    }
+  });
+}
+
 function subscribeNewsletter() {
   const email = document.getElementById("newsletterEmail")?.value.trim();
-  if (!email) { showNotification("Введите email", "warning"); return; }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showNotification("Введите корректный email", "error"); return; }
+  if (!email) { 
+    showNotification("Введите email", "warning"); 
+    return; 
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { 
+    showNotification("Введите корректный email", "error"); 
+    return; 
+  }
   showNotification("Спасибо за подписку!", "success");
   document.getElementById("newsletterEmail").value = "";
 }
 
-function setCategoryFilter(categoryId) {
-  const catalogSelect = document.getElementById('catalogCategory');
-  if (catalogSelect) {
-    catalogSelect.value = categoryId;
-    catalogFilters.categoryId = categoryId;
-    filterCatalog();
-    document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
+// ============ ФИЛЬТРАЦИЯ КОМПОНЕНТОВ ============
+function filterComponents() {
+  const searchTerm = document.getElementById("searchComponents")?.value.toLowerCase();
+  if (!searchTerm) {
+    document.querySelectorAll("#componentsList .component-item").forEach(item => {
+      item.style.display = "";
+    });
+    return;
   }
+  document.querySelectorAll("#componentsList .component-item").forEach(item => {
+    const text = item.textContent.toLowerCase();
+    item.style.display = text.includes(searchTerm) ? "" : "none";
+  });
 }
 
 // ============ ГАМБУРГЕР МЕНЮ ============
-var menuBtn = document.getElementById('mobileMenuBtn');
-var sidebar = document.getElementById('mobileSidebar');
-var overlay = document.getElementById('mobileOverlay');
-var closeBtn = document.getElementById('sidebarCloseBtn');
-var loginBtn = document.getElementById('sidebarLoginBtn');
-var registerBtn = document.getElementById('sidebarRegisterBtn');
+function initMobileMenu() {
+  const menuBtn = document.getElementById('mobileMenuBtn');
+  const sidebar = document.getElementById('mobileSidebar');
+  const overlay = document.getElementById('mobileOverlay');
+  const closeBtn = document.getElementById('sidebarCloseBtn');
+  const loginBtn = document.getElementById('sidebarLoginBtn');
+  const registerBtn = document.getElementById('sidebarRegisterBtn');
 
-if (menuBtn) {
-  menuBtn.onclick = function() {
-    sidebar.classList.add('active');
-    overlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  };
-}
-if (closeBtn) {
-  closeBtn.onclick = function() {
-    sidebar.classList.remove('active');
-    overlay.classList.remove('active');
-    document.body.style.overflow = '';
-  };
-}
-if (overlay) {
-  overlay.onclick = function() {
-    sidebar.classList.remove('active');
-    overlay.classList.remove('active');
-    document.body.style.overflow = '';
-  };
-}
-if (loginBtn) {
-  loginBtn.onclick = function() {
-    sidebar.classList.remove('active');
-    overlay.classList.remove('active');
-    document.body.style.overflow = '';
-    showLoginModal();
-  };
-}
-if (registerBtn) {
-  registerBtn.onclick = function() {
-    sidebar.classList.remove('active');
-    overlay.classList.remove('active');
-    document.body.style.overflow = '';
-    showRegisterModal();
-  };
+  if (menuBtn) {
+    menuBtn.onclick = function() {
+      if (sidebar) sidebar.classList.add('active');
+      if (overlay) overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    };
+  }
+  if (closeBtn) {
+    closeBtn.onclick = function() {
+      if (sidebar) sidebar.classList.remove('active');
+      if (overlay) overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    };
+  }
+  if (overlay) {
+    overlay.onclick = function() {
+      if (sidebar) sidebar.classList.remove('active');
+      if (overlay) overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    };
+  }
+  if (loginBtn) {
+    loginBtn.onclick = function() {
+      if (sidebar) sidebar.classList.remove('active');
+      if (overlay) overlay.classList.remove('active');
+      document.body.style.overflow = '';
+      showLoginModal();
+    };
+  }
+  if (registerBtn) {
+    registerBtn.onclick = function() {
+      if (sidebar) sidebar.classList.remove('active');
+      if (overlay) overlay.classList.remove('active');
+      document.body.style.overflow = '';
+      showRegisterModal();
+    };
+  }
+
+  document.querySelectorAll('.sidebar-link').forEach(function(link) {
+    link.onclick = function() {
+      if (sidebar) sidebar.classList.remove('active');
+      if (overlay) overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    };
+  });
 }
 
-document.querySelectorAll('.sidebar-link').forEach(function(link) {
-  link.onclick = function() {
-    sidebar.classList.remove('active');
-    overlay.classList.remove('active');
-    document.body.style.overflow = '';
-  };
-});
-
-// ============ ЗАПУСК ============
+// ============ ИНИЦИАЛИЗАЦИЯ ============
 document.addEventListener("DOMContentLoaded", () => {
+  initThemeToggle();
+  initMobileMenu();
+  
   loadCategoriesData();
   loadComponentsData();
   loadServicesData();
   checkAuth();
-  initThemeToggle();
   
-  var catalogSearch = document.getElementById("catalogSearch");
-  if (catalogSearch) {
-    catalogSearch.addEventListener("input", (e) => { catalogFilters.search = e.target.value; filterCatalog(); });
+  const searchComponents = document.getElementById("searchComponents");
+  if (searchComponents) {
+    searchComponents.addEventListener("input", filterComponents);
   }
   
-  var catalogCategory = document.getElementById("catalogCategory");
-  if (catalogCategory) {
-    catalogCategory.addEventListener("change", (e) => { catalogFilters.categoryId = e.target.value; filterCatalog(); });
-  }
-  
-  var orderModalClose = document.getElementById("orderModalClose");
+  const orderModalClose = document.getElementById("orderModalClose");
   if (orderModalClose) orderModalClose.addEventListener("click", closeOrderModal);
   
-  var cancelOrderBtn = document.getElementById("cancelOrderBtn");
+  const cancelOrderBtn = document.getElementById("cancelOrderBtn");
   if (cancelOrderBtn) cancelOrderBtn.addEventListener("click", closeOrderModal);
   
-  var confirmOrderBtn = document.getElementById("confirmOrderBtn");
+  const confirmOrderBtn = document.getElementById("confirmOrderBtn");
   if (confirmOrderBtn) confirmOrderBtn.addEventListener("click", submitOrder);
   
-  var searchComponents = document.getElementById("searchComponents");
-  if (searchComponents) searchComponents.addEventListener("input", filterComponents);
-  
   // Инициализация модального окна авторизации
-  var modal = document.getElementById('authModal');
-  var modalOverlay = document.getElementById('authModalOverlay');
-  var modalCloseBtn = document.getElementById('authModalCloseBtn');
+  const modal = document.getElementById('authModal');
+  const modalOverlay = document.getElementById('authModalOverlay');
+  const modalCloseBtn = document.getElementById('authModalCloseBtn');
   
   if (modalCloseBtn) modalCloseBtn.onclick = closeAuthModal;
   if (modalOverlay) modalOverlay.onclick = closeAuthModal;
@@ -1019,7 +1058,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// Глобальные функции
+// ============ ГЛОБАЛЬНЫЕ ФУНКЦИИ ============
 window.showLoginModal = showLoginModal;
 window.showRegisterModal = showRegisterModal;
 window.closeAuthModal = closeAuthModal;
@@ -1042,5 +1081,5 @@ window.filterCatalog = filterCatalog;
 window.openComponentDetail = openComponentDetail;
 window.closeComponentDetail = closeComponentDetail;
 window.subscribeNewsletter = subscribeNewsletter;
-window.setCategoryFilter = setCategoryFilter;
 window.updateOrderSummary = updateOrderSummary;
+window.filterComponents = filterComponents;

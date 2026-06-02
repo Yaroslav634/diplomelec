@@ -33,7 +33,7 @@ function openComponentDetail(componentId) {
   ].map(s => `
     <div class="component-spec-item ${s.class || ''}">
       <span class="component-spec-label"><i class="fas ${s.icon}"></i> ${s.label}</span>
-      <span class="component-spec-value">${s.value}</span>
+      <span class="component-spec-value">${escapeHtml(s.value)}</span>
     </div>
   `).join("");
 
@@ -56,11 +56,8 @@ function openComponentDetail(componentId) {
                   <i class="fas fa-microchip"></i>
                 </div>
               </div>
-              <div class="related-card-info">
-                <h5>${r.name}</h5>
-                <p class="related-manufacturer">${r.manufacturer || ''}</p>
-                <div class="price">${new Intl.NumberFormat("ru-RU").format(r.price)} ₽</div>
-              </div>
+              <h5>${escapeHtml(r.name)}</h5>
+              <div class="price">${new Intl.NumberFormat("ru-RU").format(r.price)} ₽</div>
             </div>
           `).join("")}
         </div>
@@ -78,12 +75,12 @@ function openComponentDetail(componentId) {
 
       <!-- Информация -->
       <div class="component-detail-info">
-        <div class="detail-header">
-          <h2>${comp.name}</h2>
-          ${comp.manufacturer ? `<span class="detail-manufacturer"><i class="fas fa-industry"></i> ${comp.manufacturer}</span>` : ''}
+        <div>
+          <h2>${escapeHtml(comp.name)}</h2>
+          ${comp.manufacturer ? `<span class="detail-manufacturer"><i class="fas fa-industry"></i> ${escapeHtml(comp.manufacturer)}</span>` : ''}
         </div>
         
-        <p class="detail-description">${comp.description || "Описание отсутствует"}</p>
+        <p class="detail-description">${escapeHtml(comp.description || "Описание отсутствует")}</p>
         
         <div class="component-detail-price">
           ${new Intl.NumberFormat("ru-RU").format(comp.price)} ₽
@@ -101,40 +98,65 @@ function openComponentDetail(componentId) {
           <button class="btn btn-primary" onclick="addToCart(${comp.id}); closeComponentDetail();" ${!comp.in_stock ? 'disabled' : ''}>
             <i class="fas fa-cart-plus"></i> ${comp.in_stock ? 'Добавить в корзину' : 'Нет в наличии'}
           </button>
-          ${typeof compareList !== 'undefined' && compareList.includes(comp.id)
-            ? `<button class="btn btn-secondary" onclick="removeFromCompare(${comp.id})"><i class="fas fa-balance-scale"></i> Убрать из сравнения</button>`
-            : `<button class="btn btn-secondary" onclick="addToCompare(${comp.id})"><i class="fas fa-balance-scale"></i> Сравнить</button>`
-          }
+          <button class="btn btn-secondary" onclick="closeComponentDetail()">
+            <i class="fas fa-times"></i> Закрыть
+          </button>
         </div>
       </div>
     </div>
   `;
 
-  document.getElementById("componentDetailContent").innerHTML = html;
-  document.getElementById("componentDetailModal").style.display = "flex";
-}
-
-function closeComponentDetail() {
-  document.getElementById("componentDetailModal").style.display = "none";
-}
-
-// Инициализация модального окна
-document.addEventListener("DOMContentLoaded", () => {
-  const modalHTML = `
-    <div class="modal" id="componentDetailModal">
-      <div class="modal-content large">
+  // Получаем или создаём модальное окно
+  let modal = document.getElementById('componentDetailModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'componentDetailModal';
+    modal.className = 'modal';
+    modal.innerHTML = `
+      <div class="modal-content">
         <div class="modal-header">
           <h2><i class="fas fa-info-circle"></i> Детали компонента</h2>
           <span class="close" onclick="closeComponentDetail()">&times;</span>
         </div>
-        <div id="componentDetailContent"></div>
+        <div class="modal-body" id="componentDetailContent"></div>
         <div class="modal-footer">
           <button class="btn btn-secondary" onclick="closeComponentDetail()">Закрыть</button>
         </div>
       </div>
-    </div>
-  `;
-  document.body.insertAdjacentHTML("beforeend", modalHTML);
+    `;
+    document.body.appendChild(modal);
+  }
+
+  document.getElementById("componentDetailContent").innerHTML = html;
+  modal.style.display = "flex";
+}
+
+function closeComponentDetail() {
+  const modal = document.getElementById("componentDetailModal");
+  if (modal) modal.style.display = "none";
+}
+
+// Инициализация
+document.addEventListener("DOMContentLoaded", () => {
+  // Убеждаемся, что модальное окно создано
+  if (!document.getElementById('componentDetailModal')) {
+    const modal = document.createElement('div');
+    modal.id = 'componentDetailModal';
+    modal.className = 'modal';
+    modal.innerHTML = `
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2><i class="fas fa-info-circle"></i> Детали компонента</h2>
+          <span class="close" onclick="closeComponentDetail()">&times;</span>
+        </div>
+        <div class="modal-body" id="componentDetailContent"></div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeComponentDetail()">Закрыть</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
 });
 
 window.openComponentDetail = openComponentDetail;

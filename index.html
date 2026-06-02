@@ -16,12 +16,9 @@
   <header class="modern-header">
     <div class="container">
       <div class="header-wrapper">
-        <!-- Логотип -->
         <a href="/" class="logo-link">
           <div class="logo-modern">
-            <div class="logo-icon-modern">
-              <i class="fas fa-bolt"></i>
-            </div>
+            <div class="logo-icon-modern"><i class="fas fa-bolt"></i></div>
             <div class="logo-text-modern">
               <span class="logo-title">Электрощит-Самара</span>
               <span class="logo-subtitle">Конфигуратор щитового оборудования</span>
@@ -29,7 +26,6 @@
           </div>
         </a>
         
-        <!-- Навигация -->
         <nav class="nav-modern">
           <ul class="nav-list">
             <li><a href="/" class="nav-link-modern active">Главная</a></li>
@@ -38,35 +34,21 @@
           </ul>
         </nav>
         
-        <!-- Авторизация -->
         <div class="auth-modern" id="authSection">
           <div class="auth-buttons-modern">
-            <button class="btn-login" onclick="showLoginModal()">
-              <i class="fas fa-sign-in-alt"></i>
-              <span>Вход</span>
-            </button>
-            <button class="btn-register" onclick="showRegisterModal()">
-              <i class="fas fa-user-plus"></i>
-              <span>Регистрация</span>
-            </button>
+            <button class="btn-login" onclick="showLoginModal()"><i class="fas fa-sign-in-alt"></i><span>Вход</span></button>
+            <button class="btn-register" onclick="showRegisterModal()"><i class="fas fa-user-plus"></i><span>Регистрация</span></button>
           </div>
         </div>
         
-        <!-- Мобильное меню (бургер) -->
-        <button class="mobile-menu-btn" id="mobileMenuBtn">
-          <i class="fas fa-bars"></i>
-        </button>
+        <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
       </div>
     </div>
   </header>
 
-  <!-- Мобильное меню -->
   <div class="mobile-sidebar" id="mobileSidebar">
     <div class="mobile-sidebar-header">
-      <div class="sidebar-logo">
-        <i class="fas fa-bolt"></i>
-        <span>Меню</span>
-      </div>
+      <div class="sidebar-logo"><i class="fas fa-bolt"></i><span>Меню</span></div>
       <button class="sidebar-close" id="sidebarCloseBtn">&times;</button>
     </div>
     <ul class="mobile-sidebar-menu">
@@ -79,18 +61,13 @@
     </ul>
   </div>
 
-  <!-- Затемнение -->
   <div class="mobile-overlay" id="mobileOverlay"></div>
 
-  <!-- Модальное окно авторизации -->
   <div class="auth-modal" id="authModal">
     <div class="auth-modal-overlay" id="authModalOverlay"></div>
     <div class="auth-modal-container">
-      <button class="auth-modal-close" id="authModalCloseBtn">
-        <i class="fas fa-times"></i>
-      </button>
+      <button class="auth-modal-close" id="authModalCloseBtn"><i class="fas fa-times"></i></button>
       <div class="auth-modal-body">
-        <!-- Форма входа -->
         <div id="loginForm" class="auth-form active">
           <div class="auth-form-header">
             <div class="auth-logo"><i class="fas fa-bolt"></i></div>
@@ -99,21 +76,13 @@
           </div>
           <div id="loginError" class="auth-error" style="display: none;"><i class="fas fa-exclamation-circle"></i><span></span></div>
           <form onsubmit="event.preventDefault(); login();">
-            <div class="auth-input-wrapper">
-              <i class="fas fa-user auth-input-icon"></i>
-              <input type="text" id="loginUsername" class="auth-input" placeholder="Имя пользователя">
-            </div>
-            <div class="auth-input-wrapper">
-              <i class="fas fa-lock auth-input-icon"></i>
-              <input type="password" id="loginPassword" class="auth-input" placeholder="Пароль">
-              <button type="button" class="auth-password-eye" onclick="togglePassword('loginPassword')"><i class="fas fa-eye-slash"></i></button>
-            </div>
+            <div class="auth-input-wrapper"><i class="fas fa-user auth-input-icon"></i><input type="text" id="loginUsername" class="auth-input" placeholder="Имя пользователя"></div>
+            <div class="auth-input-wrapper"><i class="fas fa-lock auth-input-icon"></i><input type="password" id="loginPassword" class="auth-input" placeholder="Пароль"><button type="button" class="auth-password-eye" onclick="togglePassword('loginPassword')"></button></div>
             <button type="submit" class="auth-btn"><i class="fas fa-sign-in-alt"></i><span>Войти</span></button>
           </form>
           <div class="auth-footer"><span>Нет аккаунта?</span><button type="button" onclick="showRegisterForm()" class="auth-link">Зарегистрироваться</button></div>
         </div>
         
-        <!-- Форма регистрации -->
         <div id="registerForm" class="auth-form" style="display: none;">
           <div class="auth-form-header">
             <div class="auth-logo"><i class="fas fa-user-plus"></i></div>
@@ -123,32 +92,12 @@
           <div id="registerError" class="auth-error" style="display: none;"><i class="fas fa-exclamation-circle"></i><span></span></div>
           <div id="registerSuccess" class="auth-success" style="display: none;"><i class="fas fa-check-circle"></i><span></span></div>
           <form onsubmit="event.preventDefault(); register();">
-            <div class="auth-input-wrapper">
-              <i class="fas fa-user auth-input-icon"></i>
-              <input type="text" id="regUsername" class="auth-input" placeholder="Логин *">
-            </div>
-            <div class="auth-input-wrapper">
-              <i class="fas fa-user-circle auth-input-icon"></i>
-              <input type="text" id="regFullName" class="auth-input" placeholder="ФИО *">
-            </div>
-            <div class="auth-input-wrapper">
-              <i class="fas fa-envelope auth-input-icon"></i>
-              <input type="email" id="regEmail" class="auth-input" placeholder="Email *">
-            </div>
-            <div class="auth-input-wrapper">
-              <i class="fas fa-phone auth-input-icon"></i>
-              <input type="tel" id="regPhone" class="auth-input" placeholder="Телефон">
-            </div>
-            <div class="auth-input-wrapper">
-              <i class="fas fa-lock auth-input-icon"></i>
-              <input type="password" id="regPassword" class="auth-input" placeholder="Пароль *">
-              <button type="button" class="auth-password-eye" onclick="togglePassword('regPassword')"><i class="fas fa-eye-slash"></i></button>
-            </div>
-            <div class="auth-input-wrapper">
-              <i class="fas fa-lock auth-input-icon"></i>
-              <input type="password" id="regPassword2" class="auth-input" placeholder="Подтверждение пароля *">
-              <button type="button" class="auth-password-eye" onclick="togglePassword('regPassword2')"><i class="fas fa-eye-slash"></i></button>
-            </div>
+            <div class="auth-input-wrapper"><i class="fas fa-user auth-input-icon"></i><input type="text" id="regUsername" class="auth-input" placeholder="Логин *"></div>
+            <div class="auth-input-wrapper"><i class="fas fa-user-circle auth-input-icon"></i><input type="text" id="regFullName" class="auth-input" placeholder="ФИО *"></div>
+            <div class="auth-input-wrapper"><i class="fas fa-envelope auth-input-icon"></i><input type="email" id="regEmail" class="auth-input" placeholder="Email *"></div>
+            <div class="auth-input-wrapper"><i class="fas fa-phone auth-input-icon"></i><input type="tel" id="regPhone" class="auth-input" placeholder="Телефон"></div>
+            <div class="auth-input-wrapper"><i class="fas fa-lock auth-input-icon"></i><input type="password" id="regPassword" class="auth-input" placeholder="Пароль *"><button type="button" class="auth-password-eye" onclick="togglePassword('regPassword')"><button></div>
+            <div class="auth-input-wrapper"><i class="fas fa-lock auth-input-icon"></i><input type="password" id="regPassword2" class="auth-input" placeholder="Подтверждение пароля *"><button type="button" class="auth-password-eye" onclick="togglePassword('regPassword2')"></button></div>
             <label class="auth-checkbox"><input type="checkbox" id="regAgree"><span class="auth-checkbox-text">Я принимаю <a href="#">условия использования</a></span></label>
             <button type="submit" class="auth-btn"><i class="fas fa-user-plus"></i><span>Зарегистрироваться</span></button>
           </form>
@@ -172,9 +121,7 @@
       <!-- Блок 1: Категории -->
       <div class="configurator-card categories-card">
         <div class="card-header">
-          <div class="header-icon gradient-blue">
-            <i class="fas fa-folder-tree"></i>
-          </div>
+          <div class="header-icon gradient-blue"><i class="fas fa-folder-tree"></i></div>
           <div class="header-title">
             <h3>Категории</h3>
             <span>Выберите тип оборудования</span>
@@ -191,9 +138,7 @@
       <!-- Блок 2: Каталог компонентов -->
       <div class="configurator-card catalog-card">
         <div class="card-header">
-          <div class="header-icon gradient-green">
-            <i class="fas fa-microchip"></i>
-          </div>
+          <div class="header-icon gradient-green"><i class="fas fa-microchip"></i></div>
           <div class="header-title">
             <h3>Каталог</h3>
             <span>Доступные компоненты</span>
@@ -206,10 +151,7 @@
             <input type="text" id="searchComponents" class="search-input" placeholder="Поиск компонентов...">
           </div>
           <div class="components-list-scroll" id="componentsList">
-            <div class="empty-state">
-              <i class="fas fa-folder-open"></i>
-              <p>Выберите категорию слева</p>
-            </div>
+            <div class="empty-state"><i class="fas fa-folder-open"></i><p>Выберите категорию слева</p></div>
           </div>
         </div>
       </div>
@@ -217,9 +159,7 @@
       <!-- Блок 3: Корзина / Конфигурация -->
       <div class="configurator-card cart-card">
         <div class="card-header">
-          <div class="header-icon gradient-orange">
-            <i class="fas fa-shopping-cart"></i>
-          </div>
+          <div class="header-icon gradient-orange"><i class="fas fa-shopping-cart"></i></div>
           <div class="header-title">
             <h3>Ваша конфигурация</h3>
             <span>Выбранные компоненты</span>
@@ -228,35 +168,18 @@
         </div>
         <div class="card-body">
           <div class="cart-list-scroll" id="selectedComponents">
-            <div class="empty-cart">
-              <i class="fas fa-box-open"></i>
-              <p>Корзина пуста</p>
-              <span>Добавьте компоненты из каталога</span>
-            </div>
+            <div class="empty-cart"><i class="fas fa-box-open"></i><p>Корзина пуста</p><span>Добавьте компоненты из каталога</span></div>
           </div>
 
-          <!-- Дополнительные услуги -->
           <div class="services-wrapper">
-            <div class="services-title">
-              <i class="fas fa-tools"></i>
-              <span>Дополнительные услуги</span>
-            </div>
-            <div class="services-list" id="servicesList">
-              <div class="skeleton-loader">Загрузка услуг...</div>
-            </div>
+            <div class="services-title"><i class="fas fa-tools"></i><span>Дополнительные услуги</span></div>
+            <div class="services-list" id="servicesList"><div class="skeleton-loader">Загрузка услуг...</div></div>
           </div>
 
-          <!-- Итоговая стоимость -->
           <div class="total-wrapper">
-            <div class="total-info">
-              <span class="total-label">Итоговая стоимость</span>
-              <span class="total-hint">Включая НДС</span>
-            </div>
+            <div class="total-info"><span class="total-label">Итоговая стоимость</span><span class="total-hint">Включая НДС</span></div>
             <div class="total-price" id="totalPrice">0 ₽</div>
-            <button class="btn-order" id="saveConfigBtn" onclick="showOrderModal()" disabled>
-              <span>Оформить заказ</span>
-              <i class="fas fa-arrow-right"></i>
-            </button>
+            <button class="btn-order" id="saveConfigBtn" onclick="showOrderModal()" disabled><span>Оформить заказ</span><i class="fas fa-arrow-right"></i></button>
           </div>
         </div>
       </div>
@@ -266,187 +189,68 @@
   <!-- Модальное окно оформления заказа -->
   <div class="modal" id="orderModal">
     <div class="modal-content order-modal-content">
-      <div class="modal-header">
-        <h2><i class="fas fa-shopping-cart"></i> Оформление заказа</h2>
-        <span class="close" id="orderModalClose">&times;</span>
-      </div>
+      <div class="modal-header"><h2><i class="fas fa-shopping-cart"></i> Оформление заказа</h2><span class="close" id="orderModalClose">&times;</span></div>
       <div class="modal-body">
         <form id="orderForm">
           <div class="form-row">
-            <div class="form-group">
-              <label><i class="fas fa-user"></i> Ваше имя *</label>
-              <input type="text" id="orderModalCustomerName" class="form-control" required>
-            </div>
-            <div class="form-group">
-              <label><i class="fas fa-phone"></i> Телефон</label>
-              <input type="tel" id="orderModalCustomerPhone" class="form-control">
-            </div>
+            <div class="form-group"><label><i class="fas fa-user"></i> Ваше имя *</label><input type="text" id="orderModalCustomerName" class="form-control" required></div>
+            <div class="form-group"><label><i class="fas fa-phone"></i> Телефон</label><input type="tel" id="orderModalCustomerPhone" class="form-control"></div>
           </div>
           <div class="form-row">
-            <div class="form-group">
-              <label><i class="fas fa-envelope"></i> Email</label>
-              <input type="email" id="orderModalCustomerEmail" class="form-control">
-            </div>
-            <div class="form-group">
-              <label><i class="fas fa-map-marker-alt"></i> Адрес</label>
-              <input type="text" id="orderModalCustomerAddress" class="form-control">
-            </div>
+            <div class="form-group"><label><i class="fas fa-envelope"></i> Email</label><input type="email" id="orderModalCustomerEmail" class="form-control"></div>
+            <div class="form-group"><label><i class="fas fa-map-marker-alt"></i> Адрес</label><input type="text" id="orderModalCustomerAddress" class="form-control"></div>
           </div>
           <div class="form-row">
-            <div class="form-group">
-              <label><i class="fas fa-truck"></i> Способ доставки</label>
-              <select id="orderModalDeliveryMethod" class="form-control" onchange="toggleDeliveryAddress()">
-                <option value="pickup">Самовывоз</option>
-                <option value="delivery">Доставка</option>
-              </select>
-            </div>
-            <div class="form-group" id="deliveryAddressGroup" style="display: none;">
-              <label><i class="fas fa-location-dot"></i> Адрес доставки</label>
-              <input type="text" id="orderModalDeliveryAddress" class="form-control">
-            </div>
+            <div class="form-group"><label><i class="fas fa-truck"></i> Способ доставки</label><select id="orderModalDeliveryMethod" class="form-control" onchange="toggleDeliveryAddress()"><option value="pickup">Самовывоз</option><option value="delivery">Доставка</option></select></div>
+            <div class="form-group" id="deliveryAddressGroup" style="display: none;"><label><i class="fas fa-location-dot"></i> Адрес доставки</label><input type="text" id="orderModalDeliveryAddress" class="form-control"></div>
           </div>
           <div class="form-row">
-            <div class="form-group">
-              <label><i class="fas fa-credit-card"></i> Способ оплаты</label>
-              <select id="orderModalPaymentMethod" class="form-control">
-                <option value="cash">Наличные при получении</option>
-                <option value="card">Карта при получении</option>
-                <option value="invoice">Безналичный расчет</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label><i class="fas fa-tag"></i> Название конфигурации</label>
-              <input type="text" id="orderModalConfigName" class="form-control" value="Моя конфигурация">
-            </div>
+            <div class="form-group"><label><i class="fas fa-credit-card"></i> Способ оплаты</label><select id="orderModalPaymentMethod" class="form-control"><option value="cash">Наличные при получении</option><option value="card">Карта при получении</option><option value="invoice">Безналичный расчет</option></select></div>
+            <div class="form-group"><label><i class="fas fa-tag"></i> Название конфигурации</label><input type="text" id="orderModalConfigName" class="form-control" value="Моя конфигурация"></div>
           </div>
-          <div class="form-group">
-            <label><i class="fas fa-comment"></i> Комментарий к заказу</label>
-            <textarea id="orderModalComments" rows="3" class="form-control"></textarea>
-          </div>
+          <div class="form-group"><label><i class="fas fa-comment"></i> Комментарий к заказу</label><textarea id="orderModalComments" rows="3" class="form-control"></textarea></div>
           
-          <!-- Сводка заказа -->
           <div class="order-summary-mini">
             <h4><i class="fas fa-receipt"></i> Стоимость заказа</h4>
-            <div class="summary-row">
-              <span>Компоненты:</span>
-              <span id="orderSummaryComponents">0 ₽</span>
-            </div>
-            <div class="summary-row">
-              <span>Услуги:</span>
-              <span id="orderSummaryServices">0 ₽</span>
-            </div>
-            <div class="summary-row total">
-              <span>Итого:</span>
-              <span id="orderSummaryTotal">0 ₽</span>
-            </div>
+            <div class="summary-row"><span>Компоненты:</span><span id="orderSummaryComponents">0 ₽</span></div>
+            <div class="summary-row"><span>Услуги:</span><span id="orderSummaryServices">0 ₽</span></div>
+            <div class="summary-row total"><span>Итого:</span><span id="orderSummaryTotal">0 ₽</span></div>
           </div>
         </form>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" id="cancelOrderBtn">Отмена</button>
-        <button class="btn btn-success" id="confirmOrderBtn">Подтвердить заказ</button>
-      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" id="cancelOrderBtn">Отмена</button><button class="btn btn-success" id="confirmOrderBtn">Подтвердить заказ</button></div>
     </div>
   </div>
 
-  <!-- Подвал -->
   <footer class="footer-enhanced">
     <div class="container">
       <div class="footer-top">
         <div class="footer-info">
-          <div class="footer-logo">
-            <div class="footer-logo-icon"><i class="fas fa-bolt"></i></div>
-            <div class="footer-logo-text">
-              <h3>Электрощит-Самара</h3>
-              <p>Профессиональный конфигуратор щитового оборудования</p>
-            </div>
-          </div>
-          <div class="footer-description">
-            <p>Мы предлагаем широкий спектр электротехнического оборудования для промышленных и бытовых нужд.</p>
-          </div>
-          <div class="footer-social">
-            <a href="https://vk.com/electroshield_ru" class="social-link"><i class="fab fa-vk"></i></a>
-            <a href="https://yandex.ru/maps/org/elektroshchit/47937912218/reviews/" class="social-link"><i class="fab fa-yandex"></i></a>
-            <a href="https://www.youtube.com/watch?v=Uf3oz0E0ax0" class="social-link"><i class="fab fa-youtube"></i></a>
-          </div>
+          <div class="footer-logo"><div class="footer-logo-icon"><i class="fas fa-bolt"></i></div><div class="footer-logo-text"><h3>Электрощит-Самара</h3><p>Профессиональный конфигуратор щитового оборудования</p></div></div>
+          <div class="footer-description"><p>Мы предлагаем широкий спектр электротехнического оборудования для промышленных и бытовых нужд.</p></div>
+          <div class="footer-social"><a href="#" class="social-link"><i class="fab fa-vk"></i></a><a href="#" class="social-link"><i class="fab fa-telegram"></i></a><a href="#" class="social-link"><i class="fab fa-whatsapp"></i></a><a href="#" class="social-link"><i class="fab fa-youtube"></i></a></div>
         </div>
         
         <div class="footer-links-grid">
-          <div class="footer-col">
-            <h4><i class="fas fa-compass"></i> Навигация</h4>
-            <ul>
-              <li><a href="/"><i class="fas fa-angle-right"></i> Главная</a></li>
-              <li><a href="#configurator"><i class="fas fa-angle-right"></i> Конфигуратор</a></li>
-              <li><a href="#catalog"><i class="fas fa-angle-right"></i> Каталог</a></li>
-              <li><a href="/orders.html"><i class="fas fa-angle-right"></i> Мои заказы</a></li>
-            </ul>
-          </div>
-          
-          <div class="footer-col">
-            <h4><i class="fas fa-folder"></i> Категории</h4>
-            <ul id="footerCategories">
-              <li><a href="#catalog"><i class="fas fa-angle-right"></i> Автоматические выключатели</a></li>
-              <li><a href="#catalog"><i class="fas fa-angle-right"></i> Устройства защиты</a></li>
-              <li><a href="#catalog"><i class="fas fa-angle-right"></i> Шкафы и корпуса</a></li>
-              <li><a href="#catalog"><i class="fas fa-angle-right"></i> Силовые щиты</a></li>
-            </ul>
-          </div>
-          
-          <div class="footer-col">
-            <h4><i class="fas fa-headset"></i> Поддержка</h4>
-            <ul>
-              <li><a href="#"><i class="fas fa-angle-right"></i> Доставка и оплата</a></li>
-              <li><a href="#"><i class="fas fa-angle-right"></i> Гарантия</a></li>
-              <li><a href="#"><i class="fas fa-angle-right"></i> Возврат товара</a></li>
-              <li><a href="#"><i class="fas fa-angle-right"></i> Частые вопросы</a></li>
-            </ul>
-          </div>
-          
-          <div class="footer-col">
-            <h4><i class="fas fa-address-card"></i> Контакты</h4>
-            <ul class="footer-contacts">
-              <li><i class="fas fa-phone"></i> <a href="tel:+78461234567">+7 (846) 123-45-67</a></li>
-              <li><i class="fas fa-envelope"></i> <a href="mailto:info@electroshield.ru">info@electroshield.ru</a></li>
-              <li><i class="fas fa-map-marker-alt"></i> г. Самара, ул. Ленина, 1</li>
-              <li><i class="fas fa-clock"></i> Пн-Пт: 9:00 - 18:00</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      
-      <div class="footer-newsletter">
-        <div class="newsletter-content">
-          <div class="newsletter-text">
-            <i class="fas fa-envelope-open-text"></i>
-            <div>
-              <h4>Будьте в курсе новинок</h4>
-              <p>Подпишитесь на рассылку и получайте информацию о новинках и акциях</p>
-            </div>
-          </div>
-          <div class="newsletter-form">
-            <input type="email" id="newsletterEmail" placeholder="Ваш email">
-            <button onclick="subscribeNewsletter()"><i class="fas fa-paper-plane"></i> Подписаться</button>
-          </div>
+          <div class="footer-col"><h4><i class="fas fa-compass"></i> Навигация</h4><ul><li><a href="/"><i class="fas fa-angle-right"></i> Главная</a></li><li><a href="#configurator"><i class="fas fa-angle-right"></i> Конфигуратор</a></li><li><a href="#catalog"><i class="fas fa-angle-right"></i> Каталог</a></li><li><a href="/orders.html"><i class="fas fa-angle-right"></i> Мои заказы</a></li></ul></div>
+          <div class="footer-col"><h4><i class="fas fa-folder"></i> Категории</h4><ul id="footerCategories"><li><a href="#catalog"><i class="fas fa-angle-right"></i> Автоматические выключатели</a></li><li><a href="#catalog"><i class="fas fa-angle-right"></i> Устройства защиты</a></li><li><a href="#catalog"><i class="fas fa-angle-right"></i> Шкафы и корпуса</a></li><li><a href="#catalog"><i class="fas fa-angle-right"></i> Силовые щиты</a></li></ul></div>
+          <div class="footer-col"><h4><i class="fas fa-headset"></i> Поддержка</h4><ul><li><a href="#"><i class="fas fa-angle-right"></i> Доставка и оплата</a></li><li><a href="#"><i class="fas fa-angle-right"></i> Гарантия</a></li><li><a href="#"><i class="fas fa-angle-right"></i> Возврат товара</a></li><li><a href="#"><i class="fas fa-angle-right"></i> Частые вопросы</a></li></ul></div>
+          <div class="footer-col"><h4><i class="fas fa-address-card"></i> Контакты</h4><ul class="footer-contacts"><li><i class="fas fa-phone"></i> <a href="tel:+78461234567">+7 (846) 123-45-67</a></li><li><i class="fas fa-envelope"></i> <a href="mailto:info@electroshield.ru">info@electroshield.ru</a></li><li><i class="fas fa-map-marker-alt"></i> г. Самара, ул. Ленина, 1</li><li><i class="fas fa-clock"></i> Пн-Пт: 9:00 - 18:00</li></ul></div>
         </div>
       </div>
       
       <div class="footer-bottom">
         <div class="footer-copyright"><p>&copy; 2026 АО "Электрощит-Самара". Все права защищены.</p></div>
-        <div class="footer-payment">
-          <i class="fab fa-cc-visa" title="Visa"></i>
-          <i class="fab fa-cc-mastercard" title="Mastercard"></i>
-          <i class="fab fa-cc-mir" title="Мир"></i>
-          <i class="fas fa-credit-card" title="Оплата по счету"></i>
-        </div>
+        
         <div class="footer-developer"><a href="#">Сделано в Самаре</a></div>
       </div>
     </div>
   </footer>
 
-  <!-- Скрипты -->
+  <button id="themeToggle" class="theme-toggle-btn" title="Переключить тему"><i class="fas fa-sun"></i><i class="fas fa-moon"></i></button>
+
   <script src="js/index.js"></script>
   <script src="js/cart-animation.js"></script>
-  <script src="js/compare.js"></script>
   <script src="js/component-detail.js"></script>
   <script src="js/compatibility.js"></script>
   <script src="js/phone-mask.js"></script>
@@ -460,4 +264,4 @@
   <script src="js/breadcrumbs.js"></script>
   <script src="js/filters-enhanced.js"></script>
 </body>
-</html>
+</html> 
